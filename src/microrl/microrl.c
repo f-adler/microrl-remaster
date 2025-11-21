@@ -396,14 +396,13 @@ static void prv_terminal_print_line(microrl_t* mrl, int32_t pos, uint8_t reset) 
  * \param[in,out]   idx_ptr: Pointer to the current record
  */
 MICRORL_CFG_STATIC_INLINE void prv_hist_next_record(microrl_hist_rbuf_t* rbuf_ptr, size_t* idx_ptr) {
-    while (rbuf_ptr->ring_buf[++(*idx_ptr)] != '\0') {
+    do {
+        ++(*idx_ptr);
+
         if (*idx_ptr >= MICRORL_ARRAYSIZE(rbuf_ptr->ring_buf)) {
             *idx_ptr -= MICRORL_ARRAYSIZE(rbuf_ptr->ring_buf);
-            if (rbuf_ptr->ring_buf[*idx_ptr] == '\0') {
-                break;
-            }
         }
-    }
+    } while (rbuf_ptr->ring_buf[*idx_ptr] != '\0');
 }
 
 /**
@@ -480,7 +479,10 @@ static size_t prv_hist_restore_line(microrl_hist_rbuf_t* rbuf_ptr, char* line_st
         prv_hist_next_record(rbuf_ptr, &idx);
     }
 
-    ++idx;                                      /* Move position from `\0` marker */
+    ++idx;                                      /* Move position from `\0` marker and take care of wrap-around*/
+    if (idx >= MICRORL_ARRAYSIZE(rbuf_ptr->ring_buf)) {
+        idx -= MICRORL_ARRAYSIZE(rbuf_ptr->ring_buf);
+    }
 
     size_t rec_len = 0;
     size_t k = idx;
