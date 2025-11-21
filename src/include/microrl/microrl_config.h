@@ -98,6 +98,13 @@ extern "C" {
 #endif
 
 /**
+ * \brief           Disable the tokenizer to get the full command in the first slot of the argv array
+ */
+#ifndef MICRORL_CFG_DISABLE_TOKENIZER
+#define MICRORL_CFG_DISABLE_TOKENIZER 0
+#endif
+
+/**
  * \brief           Enable it, if you want to use completion functional, also set completion callback in you code.
  *                  Completion functional calls 'copmletion' callback if user press 'TAB'.
  */

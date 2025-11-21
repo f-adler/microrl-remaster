@@ -667,7 +667,15 @@ static microrlr_t prv_handle_newline(microrl_t* mrl) {
     }
 #endif /* MICRORL_CFG_USE_ECHO_OFF */
 
+#if MICRORL_CFG_DISABLE_TOKENIZER
+    tkn_str_arr[0] = mrl->cmdline_str;
+    tkn_cnt = 1;
+    status = microrlOK;
+    (void)prv_cmdline_buf_split;  /*avoid declared but never referenced warning */
+#else
     status = prv_cmdline_buf_split(mrl, tkn_str_arr, &tkn_cnt, mrl->cmdlen);
+#endif /* MICRORL_CFG_DISABLE_TOKENIZER */
+
     if (status == microrlOK) {
 #if MICRORL_CFG_USE_COMMAND_HOOKS
         int exec_status = 0;
